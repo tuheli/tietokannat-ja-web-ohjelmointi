@@ -9,7 +9,6 @@ Ohjelman kuvaus sellaisena kuin se on [kurssisivulla](https://hy-tsoha.github.io
 
 Sovelluksen ominaisuuksia:
 
-Markup :
 - Käyttäjä voi kirjautua sisään ja ulos sekä luoda uuden tunnuksen.
 - Opiskelija näkee listan kursseista ja voi liittyä kurssille.
 - Opiskelija voi lukea kurssin tekstimateriaalia sekä ratkoa kurssin tehtäviä.
