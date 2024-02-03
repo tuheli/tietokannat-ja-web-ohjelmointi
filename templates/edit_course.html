@@ -7,25 +7,66 @@
     <a href="/logout">Kirjaudu ulos</a>
     <a href="/">Takaisin kaikkien kurssien näkymään</a>
 </div>
-
 <hr>
-
 <div class="container-fluid">
+<h2>Muokkaat kurssia "{{ course.title }}"</h2>
+<br>
   <div class="row">
     <div class="col-md-6">
         <h2>Kurssin tekstimateriaali</h2>
         <form action="/update_course_materials" method="POST">
             <input type="hidden" name="course_id" value="{{ course.id }}">
             <div class="form-group">
-                <textarea class="form-control" id="materials" name="materials" rows="10">{{ materials }}</textarea>
+                <textarea class="form-control" id="materials" name="materials" rows="5">{{ materials }}</textarea>
             </div>
             <button type="submit" class="btn btn-primary">Päivitä tekstimateriaali</button>
         </form>
     </div>
-      <div class="col-md-6">
-        <h2>Kurssin tehtävät</h2>
-      </div>
-  </div>
+        <div class="col-md-6">
+            <h2>Lisää uusi tehtävä</h2>
+            <form action="/add_course_task" method="POST">
+                <p>Tehtävän kysymys:</p>
+                <input type="hidden" name="course_id" value="{{ course.id }}">
+                <div class="form-group">
+                    <textarea class="form-control" id="question" name="question" rows="3"></textarea>
+                </div>
+                <p>Tehtävän vastauksen tyyppi:</p>
+                <div>
+                    <input type="radio" name="answer_type" value="open_answer" checked> Vapaamuotoinen vastaus <br>
+                    <input type="radio" name="answer_type" value="multiple_choice_answer"> Monivalinta
+                </div>
+                <br>
+                <p>Tehtävän vastaus:</p>
+                <div class="form-group">
+                    <textarea class="form-control" id="task-answer" name="task_answer" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Lisää tehtävä</button>
+            </form>
+            <br>
+            <div>
+                <h2>Kurssin tehtävät</h2>
+                <ul class="list-group">
+                    {% for task in tasks %}
+                    <li class="list-group-item">
+                        <div>Kysymys: {{ task.question }}</div>
+                        <div>Tyyppi: {{ 'Vapaamuotoinen vastaus' if task.answer_type == 'open_answer' else 'Monivalinta' }}</div>
+                        <div>Oikeat vastaukset:
+                            <ul>
+                                {% for answer in task.answers %}
+                                <li>{{ answer }}</li>
+                                {% else %}
+                                <p>Ei oikeita vastauksia.</p>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </li>
+                    {% else %}
+                    <p>Kurssilla ei ole tehtäviä.</p>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}

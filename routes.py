@@ -1,6 +1,6 @@
 from app import app
 from flask import flash, redirect, render_template, request, session
-from courses import get_course, get_joined_courses, get_available_courses, get_materials, is_valid_new_course, update_materials
+from courses import add_course, add_task, get_course, get_answers, get_joined_courses, get_available_courses, get_course_materials, get_tasks, is_valid_new_course, update_materials
 from db import db
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -95,14 +95,8 @@ def create_course():
     if not is_valid_new_course(title, description):
         flash('Kurssin tiedot eivät kelpaa', 'error')
         return redirect('/')
-    
-    sql_course = text("INSERT INTO courses (title, description) VALUES (:title, :description) RETURNING id")
-    sql_user_courses = text("INSERT INTO user_courses (user_id, course_id) VALUES (:user_id, :course_id)")
 
-    result = db.session.execute(sql_course, {"title": title, "description": description })
-    db.session.execute(sql_user_courses, {"user_id": session.get("user_id"), "course_id": result.fetchone()[0] })
-    db.session.commit()
-
+    add_course(session.get('user_id'), title, description)
     flash('Kurssin luonti onnistui', 'success')
     return redirect('/')
 
@@ -122,8 +116,26 @@ def edit_course():
     
     course_id = request.args.get('course_id')
     course = get_course(course_id)
-    materials = get_materials(course_id)
-    return render_template('edit_course.html', course=course, materials=materials)
+    materials = get_course_materials(course_id)
+    tasks = get_tasks(course_id)
+    answers = get_answers(course_id)
+
+    # Nyt haetaan erikseen koko kurssin tehtävät ja vastaukset ja liitetään ne yhteen.
+
+    tasks_with_answers = {}
+    for task in tasks:
+        if task.id not in tasks_with_answers:
+            tasks_with_answers[task.id] = {
+                "task_id": task.id, 
+                "question": task.question, 
+                "answer_type": task.answer_type, 
+                "answers": []}
+        for answer in answers:
+            if answer.task_id == task.id:
+                tasks_with_answers[task.id]["answers"].append(answer.answer)
+
+    tasks_with_answers_list = list(tasks_with_answers.values())
+    return render_template('edit_course.html', course=course, materials=materials, tasks=tasks_with_answers_list)
 
 @app.route('/update_course_materials', methods=['POST'])
 def update_course_materials():
@@ -136,4 +148,22 @@ def update_course_materials():
 
     update_materials(course_id, materials)
     flash('Kurssimateriaali päivitetty onnistuneesti.', 'success')
+    return redirect(f'/edit_course?course_id={course_id}')
+
+@app.route('/add_course_task', methods=['POST'])
+def add_course_task():
+    if not session.get('is_teacher'):
+        flash('Vain opettajat voivat lisätä tehtäviä', 'error')
+        return redirect('/')
+    
+    course_id = request.form['course_id']
+    question = request.form['question']
+    answer_type = request.form['answer_type']
+    task_answer = request.form['task_answer']
+
+    if answer_type != "multiple_choice_answer" and answer_type != "open_answer":
+        flash('Vastauksen tyyppi ei kelpaa', 'error')
+        return redirect(f'/edit_course?course_id={course_id}')
+
+    add_task(course_id, question, answer_type, task_answer)
     return redirect(f'/edit_course?course_id={course_id}')

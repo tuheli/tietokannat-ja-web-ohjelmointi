@@ -51,7 +51,7 @@ def update_materials(course_id, content):
     db.session.execute(sql, {"course_id": course_id, "content": content})
     db.session.commit()
 
-def get_materials(course_id):
+def get_course_materials(course_id):
     sql = text("""
                SELECT content 
                FROM course_materials 
@@ -62,3 +62,72 @@ def get_materials(course_id):
     if not materials:
         return "Kurssilla ei ole materiaalia."
     return materials[0]
+
+def add_course(user_id, title, description):
+    sql_course = text(
+        """
+        INSERT INTO courses (title, description) 
+        VALUES (:title, :description) 
+        RETURNING id
+        """
+    )
+    
+    sql_user_courses = text(
+        """
+        INSERT INTO user_courses (user_id, course_id) 
+        VALUES (:user_id, :course_id)
+        """
+    )
+
+    course_result = db.session.execute(sql_course, {"title": title, "description": description })
+
+    added_course_id = course_result.fetchone()[0]
+
+    db.session.execute(sql_user_courses, {"user_id": user_id, "course_id": added_course_id })
+    db.session.commit()
+
+def add_task(course_id, question, answer_type, answer):
+    task_sql = text(
+        """
+        INSERT INTO tasks (course_id, question, answer_type) 
+        VALUES (:course_id, :question, :answer_type)
+        RETURNING id
+        """
+    )
+
+    answer_sql = text(
+        """
+        INSERT INTO task_answers (task_id, answer) 
+        VALUES (:task_id, :answer)
+        """
+    )
+
+    task_result = db.session.execute(task_sql, {"course_id": course_id, "question": question, "answer_type": answer_type})
+    
+    added_task_id = task_result.fetchone()[0]
+
+    db.session.execute(answer_sql, {"task_id": added_task_id, "answer": answer})
+    db.session.commit()
+
+def get_tasks(course_id):
+    sql = text("""
+               SELECT id, question, answer_type 
+               FROM tasks T
+               WHERE course_id = :course_id
+               """)
+    result = db.session.execute(sql, {"course_id": course_id})
+    tasks = result.fetchall()
+    return tasks
+
+def get_answers(course_id):
+    sql = text(
+        """
+        SELECT TA.task_id, TA.answer
+        FROM task_answers TA
+        LEFT JOIN tasks T ON TA.task_id = T.id
+        WHERE T.course_id = :course_id
+        """
+    )
+    result = db.session.execute(sql, {"course_id": course_id})
+    answers = result.fetchall()
+    return answers
