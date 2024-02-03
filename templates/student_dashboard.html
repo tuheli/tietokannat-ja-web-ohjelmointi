@@ -4,5 +4,35 @@
 
 <p>Olet kirjautunut opiskelijana nimellä {{ session.username }}</p>
 <a href="/logout">Kirjaudu ulos</a>
+<hr>
+<div class="container-fluid">
+  <div class="row">
+      <div class="col-md-6">
+          <h2>Sinun kurssit</h2>
+          <ul class="list-group">
+              {% for course in joined_courses %}
+              <li class="list-group-item">{{ course.title }}</li>
+              {% else %}
+              <li class="list-group-item">Sinulla ei ole kursseja.</li>
+              {% endfor %}
+          </ul>
+      </div>
+      <div class="col-md-6">
+          <h2>Liity kurssille</h2>
+          <ul class="list-group">
+            {% for course in available_courses %}
+            <li class="list-group-item">
+              <form action="join_course" method="POST">
+                <input type="hidden" name="course_id" value="{{ course.id }}">
+                <button type="submit" class="btn btn-link">{{course.title}}</button>
+              </form>
+            </li>
+            {% else %}
+            <li class="list-group-item">Kursseja ei ole.</li>
+            {% endfor %}
+        </ul>
+      </div>
+  </div>
+</div>
 
 {% endblock %}

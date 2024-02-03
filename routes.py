@@ -1,6 +1,6 @@
 from app import app
 from flask import flash, redirect, render_template, request, session
-from courses import get_courses, is_valid_new_course
+from courses import get_joined_courses, get_available_courses, is_valid_new_course
 from db import db
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -11,12 +11,14 @@ def index():
     if "username" not in session:
         return render_template("index.html")
     
-    courses = get_courses(session.get("user_id"))
+    user_id = session.get("user_id")
+    joined_courses = get_joined_courses(user_id)
 
     if session.get('is_teacher'):
-        return render_template("teacher_dashboard.html", courses=courses)
+        return render_template("teacher_dashboard.html", courses=joined_courses)
     else:
-        return render_template("student_dashboard.html", courses=courses)
+        available_courses = get_available_courses(user_id)
+        return render_template("student_dashboard.html", joined_courses=joined_courses, available_courses=available_courses)
 
 @app.route("/login",methods=["POST"])
 def login():
@@ -102,4 +104,12 @@ def create_course():
     db.session.commit()
 
     flash('Kurssin luonti onnistui', 'success')
+    return redirect('/')
+
+@app.route('/join_course', methods=['POST'])
+def join_course():
+    course_id = request.form['course_id']
+    sql = text("INSERT INTO user_courses (user_id, course_id) VALUES (:user_id, :course_id)")
+    db.session.execute(sql, {"user_id": session.get("user_id"), "course_id": course_id})
+    db.session.commit()
     return redirect('/')
