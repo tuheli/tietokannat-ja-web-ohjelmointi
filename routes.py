@@ -167,3 +167,12 @@ def add_course_task():
 
     add_task(course_id, question, answer_type, task_answer)
     return redirect(f'/edit_course?course_id={course_id}')
+
+@app.route('/student_course_page', methods=['GET'])
+def student_course_page():
+    course_id = request.args.get('course_id')
+    course = get_course(course_id)
+    materials = get_course_materials(course_id)
+    tasks = get_tasks(course_id)
+
+    return render_template('student_course_page.html', course=course, materials=materials, tasks=tasks)

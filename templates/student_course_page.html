@@ -1,0 +1,38 @@
+{% extends "base.html" %} 
+
+{% block content %} 
+
+<p>Olet kirjautunut opiskelijana nimellä {{ session.username }}</p>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <a href="/logout">Kirjaudu ulos</a>
+    <a href="/">Takaisin kaikkien kurssien näkymään</a>
+</div>
+<hr>
+<div class="container-fluid">
+<h2>Katselet kurssia "{{ course.title }}"</h2>
+<br>
+  <div class="row">
+    <div class="col-md-6">
+        <h2>Kurssin tekstimateriaali</h2>
+            <div class="form-group">
+                <textarea class="form-control" id="materials" name="materials" rows="20">{{ materials }}</textarea>
+            </div>
+    </div>
+        <div class="col-md-6">
+            <div>
+                <h2>Kurssin tehtävät</h2>
+                <ul class="list-group">
+                    {% for task in tasks %}
+                    <li class="list-group-item">
+                        <div>Kysymys: {{ task.question }}</div>
+                    </li>
+                    {% else %}
+                    <p>Kurssilla ei ole tehtäviä.</p>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

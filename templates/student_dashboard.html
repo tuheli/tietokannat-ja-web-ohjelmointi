@@ -11,7 +11,9 @@
           <h2>Sinun kurssit</h2>
           <ul class="list-group">
               {% for course in joined_courses %}
-              <li class="list-group-item">{{ course.title }}</li>
+              <li class="list-group-item">
+                <a href="{{ url_for('student_course_page', course_id=course.id) }}">{{ course.title }}</a>
+              </li>
               {% else %}
               <li class="list-group-item">Sinulla ei ole kursseja.</li>
               {% endfor %}
