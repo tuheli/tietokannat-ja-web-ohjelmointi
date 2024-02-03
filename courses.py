@@ -30,3 +30,35 @@ def get_available_courses(user_id):
     result = db.session.execute(sql, {"user_id": user_id})
     courses = result.fetchall()
     return courses
+
+def get_course(course_id):
+    sql = text("""
+               SELECT id, title, description 
+               FROM courses 
+               WHERE id = :id
+               """)
+    result = db.session.execute(sql, {"id": course_id})
+    course = result.fetchone()
+    return course
+
+def update_materials(course_id, content):
+    sql = text("""
+               INSERT INTO course_materials (course_id, content)
+               VALUES (:course_id, :content)
+               ON CONFLICT (course_id) 
+               DO UPDATE SET content = EXCLUDED.content;
+               """)
+    db.session.execute(sql, {"course_id": course_id, "content": content})
+    db.session.commit()
+
+def get_materials(course_id):
+    sql = text("""
+               SELECT content 
+               FROM course_materials 
+               WHERE course_id = :course_id
+               """)
+    result = db.session.execute(sql, {"course_id": course_id})
+    materials = result.fetchone()
+    if not materials:
+        return "Kurssilla ei ole materiaalia."
+    return materials[0]

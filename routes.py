@@ -1,6 +1,6 @@
 from app import app
 from flask import flash, redirect, render_template, request, session
-from courses import get_joined_courses, get_available_courses, is_valid_new_course
+from courses import get_course, get_joined_courses, get_available_courses, get_materials, is_valid_new_course, update_materials
 from db import db
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -113,3 +113,27 @@ def join_course():
     db.session.execute(sql, {"user_id": session.get("user_id"), "course_id": course_id})
     db.session.commit()
     return redirect('/')
+
+@app.route('/edit_course', methods=['GET'])
+def edit_course():
+    if not session.get('is_teacher'):
+        flash('Vain opettajat voivat muokata kursseja', 'error')
+        return redirect('/')
+    
+    course_id = request.args.get('course_id')
+    course = get_course(course_id)
+    materials = get_materials(course_id)
+    return render_template('edit_course.html', course=course, materials=materials)
+
+@app.route('/update_course_materials', methods=['POST'])
+def update_course_materials():
+    if not session.get('is_teacher'):
+        flash('Vain opettajat voivat muokata kursseja', 'error')
+        return redirect('/')
+    
+    course_id = request.form['course_id']
+    materials = request.form['materials']
+
+    update_materials(course_id, materials)
+    flash('Kurssimateriaali päivitetty onnistuneesti.', 'success')
+    return redirect(f'/edit_course?course_id={course_id}')
