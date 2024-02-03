@@ -1,0 +1,26 @@
+{% extends "base.html" %} 
+
+{% block content %}
+
+<p>Uusi tunnus</p>
+<form action="/register" method="POST">
+  <p>
+    Tunnus:<br />
+    <input type="text" name="username" />
+  </p>
+  <p>
+    Salasana:<br />
+    <input type="password" name="password" />
+  </p>
+  <p>
+    <label>
+        <input type="checkbox" name="is_teacher" value="true">
+        Rekisteröidy opettajana
+    </label>
+</p>
+  <input type="submit" value="Luo tunnus" />
+</form>
+<p>Onko sinulla jo tunnus? <a href="/">Takaisin kirjautumiseen</a></p>
+
+{% endblock %}
+
