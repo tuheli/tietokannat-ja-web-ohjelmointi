@@ -37,8 +37,8 @@ Saat sovelluksen käyntiin [kurssisivulta](https://hy-tsoha.github.io/materiaali
 
 - "Kloonaa tämä repositorio omalle koneellesi ja siirry sen juurikansioon.
 - Luo kansioon .env-tiedosto ja määritä sen sisältö seuraavanlaiseksi:
-  DATABASE_URL=<tietokannan-paikallinen-osoite> (oma lisäys: esim. postgresql:///user ja poista <> merkit)
-  SECRET_KEY=<salainen-avain> (oma lisäys: kirjoita vaan jokin merkkijono ja poista <> merkit)
+  DATABASE_URL=tietokannan-paikallinen-osoite (oma lisäys: esim. postgresql:///user, sitaatista poistettu <> merkit)
+  SECRET_KEY=salainen-avain (oma lisäys: kirjoita vaan jokin merkkijono, sitaatista poistettu <> merkit)
 - Seuraavaksi aktivoi virtuaaliympäristö ja asenna sovelluksen riippuvuudet komennoilla:
   python3 -m venv venv
   source venv/bin/activate
