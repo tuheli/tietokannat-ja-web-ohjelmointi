@@ -39,10 +39,7 @@ Saat sovelluksen käyntiin [kurssisivulta](https://hy-tsoha.github.io/materiaali
 - Luo kansioon .env-tiedosto ja määritä sen sisältö seuraavanlaiseksi:
   DATABASE_URL=tietokannan-paikallinen-osoite (oma lisäys: esim. postgresql:///user, sitaatista poistettu <> merkit)
   SECRET_KEY=salainen-avain (oma lisäys: kirjoita vaan jokin merkkijono, sitaatista poistettu <> merkit)
-- Seuraavaksi aktivoi virtuaaliympäristö ja asenna sovelluksen riippuvuudet komennoilla:
-  python3 -m venv venv
-  source venv/bin/activate
-  pip install -r ./requirements.txt
+- Seuraavaksi aktivoi virtuaaliympäristö ja asenna sovelluksen riippuvuudet komennoilla: python3 -m venv venv, source venv/bin/activate ja pip install -r ./requirements.txt
 - Määritä vielä tietokannan skeema komennolla:
   psql < schema.sql (oma lisäys: tarvit tietenkin postgresin koneellesi. Itse käytin macilla appia https://postgresapp.com/. Jos sinulla on toinen käyttöjärjestelmä ks. https://www.postgresql.org/)
 - Nyt voit käynnistää sovelluksen komennolla flask run"
