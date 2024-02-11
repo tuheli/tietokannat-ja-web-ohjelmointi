@@ -13,14 +13,37 @@
 <br>
   <div class="row">
     <div class="col-md-6">
-        <h2>Kurssin tekstimateriaali</h2>
-        <form action="/update_course_materials" method="POST">
-            <input type="hidden" name="course_id" value="{{ course.id }}">
-            <div class="form-group">
-                <textarea class="form-control" id="materials" name="materials" rows="5">{{ materials }}</textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Päivitä tekstimateriaali</button>
-        </form>
+        <div>
+            <h2>Kurssin tekstimateriaali</h2>
+            <form action="/update_course_materials" method="POST">
+                <input type="hidden" name="course_id" value="{{ course.id }}">
+                <div class="form-group">
+                    <textarea class="form-control" id="materials" name="materials" rows="5">{{ materials }}</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Päivitä tekstimateriaali</button>
+            </form>
+        </div>
+        <br>
+        <div>
+            <h2>Kurssin tilastotietoja</h2>
+
+            {% if students|length == 1 %}
+            <p>Kurssilla on {{ students|length }} opiskelija.</p>
+            {% else %}
+            <p>Kurssilla on {{ students|length }} opiskelijaa.</p>
+            {% endif %}
+
+            {% if students|length > 0 %}
+            <p>Kurssin opiskelijat ovat:</p>
+            <ul class="list-group">
+                {% for student in students %}
+                <li class="list-group-item">
+                    <div>{{ student.username }}</div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
     </div>
         <div class="col-md-6">
             <h2>Lisää uusi tehtävä</h2>
@@ -75,6 +98,7 @@
                         <input type="text" class="form-control" id="new_title" name="new_title">
                     </div>
                     <button type="submit" class="btn btn-primary">Päivitä kurssin nimi</button>
+                </form>
             </div>
             <br>
             <div>
@@ -82,6 +106,7 @@
                 <form action="/delete_course" method="POST">
                     <input type="hidden" name="course_id" value="{{ course.id }}">
                     <button type="submit" class="btn btn-danger">Poista kurssi</button>
+                </form>
             </div>
         </div>
     </div>

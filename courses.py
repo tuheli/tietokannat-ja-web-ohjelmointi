@@ -153,3 +153,14 @@ def update_course(course_id, new_title):
     db.session.execute(sql, {"new_name": new_title, "course_id": course_id})
     db.session.commit()
     return True
+
+def get_course_students(course_id):
+    sql = text("""
+               SELECT U.id, U.username 
+               FROM users U 
+               LEFT JOIN user_courses UC ON U.id = UC.user_id 
+               WHERE UC.course_id = :course_id AND U.is_teacher = FALSE
+               """)
+    result = db.session.execute(sql, {"course_id": course_id})
+    students = result.fetchall()
+    return students

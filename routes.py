@@ -1,6 +1,6 @@
 from app import app
 from flask import flash, redirect, render_template, request, session
-from courses import add_course, add_task, delete_course_by_id, get_course, get_answers, get_joined_courses, get_available_courses, get_course_materials, get_tasks, is_valid_new_course, update_course, update_materials
+from courses import add_course, add_task, delete_course_by_id, get_course, get_answers, get_course_students, get_joined_courses, get_available_courses, get_course_materials, get_tasks, is_valid_new_course, update_course, update_materials
 from db import db
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -119,6 +119,7 @@ def edit_course():
     materials = get_course_materials(course_id)
     tasks = get_tasks(course_id)
     answers = get_answers(course_id)
+    students = get_course_students(course_id)
 
     # Nyt haetaan erikseen koko kurssin tehtävät ja vastaukset ja liitetään ne yhteen.
 
@@ -135,7 +136,7 @@ def edit_course():
                 tasks_with_answers[task.id]["answers"].append(answer.answer)
 
     tasks_with_answers_list = list(tasks_with_answers.values())
-    return render_template('edit_course.html', course=course, materials=materials, tasks=tasks_with_answers_list)
+    return render_template('edit_course.html', course=course, materials=materials, tasks=tasks_with_answers_list, students=students)
 
 @app.route('/update_course_materials', methods=['POST'])
 def update_course_materials():
