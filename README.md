@@ -26,10 +26,9 @@ Sovelluksen kehityksen tilanne (yllä olevasta kuvauksesta puuttuvat ominaisuude
 
 - Opiskelija voi ratkoa kurssin tehtäviä.
 - Opiskelija pystyy näkemään tilaston, mitkä kurssin tehtävät hän on ratkonut.
-- Opettaja pystyy muuttamaan olemassa olevaa kurssia (voi kuitenkin lisätä tehtäviä).
 - Opettaja pystyy näkemään kurssistaan tilaston, keitä opiskelijoita on kurssilla ja mitkä kurssin tehtävät kukin on ratkonut.
 
-Ominaisuuksista on toteutettu 9 / 15.
+Ominaisuuksista on toteutettu 11 / 15.
 
 ### Sovelluksen käynnistysohjeet
 

@@ -1,6 +1,6 @@
 from app import app
 from flask import flash, redirect, render_template, request, session
-from courses import add_course, add_task, delete_course_by_id, get_course, get_answers, get_joined_courses, get_available_courses, get_course_materials, get_tasks, is_valid_new_course, update_materials
+from courses import add_course, add_task, delete_course_by_id, get_course, get_answers, get_joined_courses, get_available_courses, get_course_materials, get_tasks, is_valid_new_course, update_course, update_materials
 from db import db
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -186,4 +186,22 @@ def delete_course():
     course_id = request.form['course_id']
     delete_course_by_id(course_id)
     return redirect('/')
+
+@app.route('/update_course_title', methods=['POST'])
+def update_course_title():
+    if not session.get('is_teacher'):
+        flash('Vain opettajat voivat muokata kursseja', 'error')
+        return redirect('/')
+
+    course_id = request.form['course_id']
+    new_title = request.form['new_title']
+
+    was_update_successful = update_course(course_id, new_title)
+    
+    if was_update_successful:
+        flash('Kurssin nimi päivitettiin onnistuneesti', 'success')
+        return redirect(f'/edit_course?course_id={course_id}')
+    else:
+        flash('Kurssin nimen päivitys epäonnistui. Nimen tulee olla määritelty ja se saa olla enintään 255 merkkiä pitkä.', 'error')
+        return redirect(f'/edit_course?course_id={course_id}')
 

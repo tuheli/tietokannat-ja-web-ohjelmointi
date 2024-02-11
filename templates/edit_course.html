@@ -67,6 +67,17 @@
             </div>
             <br>
             <div>
+                <h2>Muokkaa kurssia</h2>
+                <form action="/update_course_title" method="POST">
+                    <input type="hidden" name="course_id" value="{{ course.id }}">
+                    <div class="form-group">
+                        <label for="title">Kurssin uusi nimi</label>
+                        <input type="text" class="form-control" id="new_title" name="new_title">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Päivitä kurssin nimi</button>
+            </div>
+            <br>
+            <div>
                 <h2>Poista kurssi</h2>
                 <form action="/delete_course" method="POST">
                     <input type="hidden" name="course_id" value="{{ course.id }}">

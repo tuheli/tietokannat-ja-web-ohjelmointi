@@ -140,3 +140,16 @@ def delete_course_by_id(course_id):
     )
     db.session.execute(sql, {"course_id": course_id})
     db.session.commit()
+
+def update_course(course_id, new_title):
+    if not new_title or len(new_title) > 255:
+        return False
+
+    sql = text("""
+               UPDATE courses 
+               SET title = :new_name 
+               WHERE id = :course_id
+               """)
+    db.session.execute(sql, {"new_name": new_title, "course_id": course_id})
+    db.session.commit()
+    return True
