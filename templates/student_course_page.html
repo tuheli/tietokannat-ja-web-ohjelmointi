@@ -9,27 +9,82 @@
 </div>
 <hr>
 <div class="container-fluid">
-<h2>Katselet kurssia "{{ course.title }}"</h2>
-<br>
-  <div class="row">
-    <div class="col-md-6">
-        <h2>Kurssin tekstimateriaali</h2>
+    <h2>Katselet kurssia "{{ course.title }}"</h2>
+    <br>
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Kurssin tekstimateriaali</h2>
             <div class="form-group">
                 <textarea class="form-control" id="materials" name="materials" rows="20">{{ materials }}</textarea>
             </div>
-    </div>
+        </div>
         <div class="col-md-6">
             <div>
                 <h2>Kurssin tehtävät</h2>
+                {% if task_count == 0 %}
+                <p>Kurssilla ei ole tehtäviä.</p>
+                {% else %}
+                {% if tasks_without_given_answers|length == 0 %}
+                <br>
+                <h4>Hyvä, olen vastannut kaikkiin tehtäviin</h4>
+                {% else %}
+                <br>
+                <h4>Tehtävät, joihin en ole vielä vastannut</h4>
                 <ul class="list-group">
-                    {% for task in tasks %}
+                    {% for task in tasks_without_given_answers %}
                     <li class="list-group-item">
                         <div>Kysymys: {{ task.question }}</div>
+                        <br>
+                        <div>Vastaukseni:</div>
+                        <form action="/student_task_answer" method="post">
+                            <input type="hidden" name="task_id" value="{{ task.task_id }}">
+                            <input type="hidden" name="course_id" value="{{ course.id }}">
+                            <textarea class="form-control" id="answer" name="answer" rows="5"></textarea>
+                            <br>
+                            <button type="submit" class="btn btn-primary">Lähetä vastaus</button>
+                        </form>
                     </li>
-                    {% else %}
-                    <p>Kurssilla ei ole tehtäviä.</p>
                     {% endfor %}
                 </ul>
+                {% endif %}
+                {% endif %}
+            </div>
+            <div>
+                {% if tasks_without_given_answers|length == 0 %}
+                <br>
+                <h4>Tehtävät ja antamani vastaukset</h4>
+                {% else %}
+                <br>
+                <h4>Tehtävät, joihin olen antanut vastauksen</h4>
+                {% endif %}
+                {% if tasks_with_given_answers|length == 0 %}
+                <p>En ole vielä vastannut mihinkään tehtävään</p>
+                {% else %}
+                <ul class="list-group">
+                    {% for task in tasks_with_given_answers %}
+                    <li class="list-group-item">
+                        <div>Kysymys: {{ task.question }}</div>
+                        <br>
+                        <div>Lähettämäni vastaukset
+                            <ul>
+                                {% for answer in task.answers %}
+                                <li>{{ answer }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <br>
+                        <div>Uusi vastaukseni (vanhat vastaukset säilyvät):</div>
+                        <form action="/student_task_answer" method="post">
+                            <input type="hidden" name="task_id" value="{{ task.task_id }}">
+                            <input type="hidden" name="course_id" value="{{ course.id }}">
+                            <textarea class="form-control" id="answer" name="answer" rows="5"></textarea>
+                            <br>
+                            <button type="submit" class="btn btn-primary">Lähetä uusi vastaus</button>
+                        </form>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
             </div>
         </div>
     </div>

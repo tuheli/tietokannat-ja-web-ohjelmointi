@@ -164,3 +164,22 @@ def get_course_students(course_id):
     result = db.session.execute(sql, {"course_id": course_id})
     students = result.fetchall()
     return students
+
+def add_student_task_answer(user_id, task_id, answer):
+    sql = text("""
+               INSERT INTO student_task_answers (user_id, task_id, answer) 
+               VALUES (:user_id, :task_id, :answer)
+               """)
+    db.session.execute(sql, {'user_id': user_id, 'task_id': task_id, 'answer': answer})
+    db.session.commit()
+
+def get_student_task_answers(user_id, course_id):
+    sql = text("""
+               SELECT T.id, T.question, STA.answer, STA.task_id
+               FROM student_task_answers STA 
+               LEFT JOIN tasks T ON STA.task_id = T.id 
+               WHERE STA.user_id = :user_id AND T.course_id = :course_id
+               """)
+    result = db.session.execute(sql, {"user_id": user_id, "course_id": course_id})
+    answers = result.fetchall()
+    return answers

@@ -35,3 +35,12 @@ CREATE TABLE task_answers (
     task_id INTEGER REFERENCES tasks(id) ON DELETE CASCADE,
     answer TEXT NOT NULL
 );
+
+CREATE TABLE student_task_answers (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    task_id INTEGER REFERENCES tasks(id) ON DELETE CASCADE,
+    answer TEXT NOT NULL
+);
+
+DROP TABLE IF EXISTS student_task_answers;

@@ -1,6 +1,6 @@
 from app import app
 from flask import flash, redirect, render_template, request, session
-from courses import add_course, add_task, delete_course_by_id, get_course, get_answers, get_course_students, get_joined_courses, get_available_courses, get_course_materials, get_tasks, is_valid_new_course, update_course, update_materials
+from courses import add_course, add_student_task_answer, add_task, delete_course_by_id, get_course, get_answers, get_course_students, get_joined_courses, get_available_courses, get_course_materials, get_student_task_answers, get_tasks, is_valid_new_course, update_course, update_materials
 from db import db
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -175,8 +175,33 @@ def student_course_page():
     course = get_course(course_id)
     materials = get_course_materials(course_id)
     tasks = get_tasks(course_id)
+    student_task_answers = get_student_task_answers(session.get('user_id'), course_id)
 
-    return render_template('student_course_page.html', course=course, materials=materials, tasks=tasks)
+    # Haetaan erikseen kurssin tehtävät ja annetut vastaukset ja liitetään ne yhteen. Ajatuksena on, että opiskelija voi antaa useita vastauksia samaan tehtävään ja paras vastaus arvioidaan. Siksi tallennetaan useita vastauksia.
+
+    tasks_mapped_with_given_answers = {}
+    for task in tasks:
+        if task.id not in tasks_mapped_with_given_answers:
+            tasks_mapped_with_given_answers[task.id] = {
+                "task_id": task.id, 
+                "question": task.question, 
+                "answers": []}
+        for answer in student_task_answers:
+            if answer.task_id == task.id:
+                tasks_mapped_with_given_answers[task.id]["answers"].append(answer.answer)
+
+    tasks_mapped_with_given_answers_list = list(tasks_mapped_with_given_answers.values())
+    
+    tasks_without_given_answers = []
+    tasks_with_given_answers = []
+
+    for task in tasks_mapped_with_given_answers_list:
+        if len(task["answers"]) == 0:
+            tasks_without_given_answers.append(task)
+        else:
+            tasks_with_given_answers.append(task)
+
+    return render_template('student_course_page.html', course=course, materials=materials, tasks_with_given_answers=tasks_with_given_answers, tasks_without_given_answers=tasks_without_given_answers, task_count=len(tasks))
 
 @app.route('/delete_course', methods=['POST'])
 def delete_course():
@@ -205,4 +230,22 @@ def update_course_title():
     else:
         flash('Kurssin nimen päivitys epäonnistui. Nimen tulee olla määritelty ja se saa olla enintään 255 merkkiä pitkä.', 'error')
         return redirect(f'/edit_course?course_id={course_id}')
+
+@app.route('/student_task_answer', methods=['POST'])
+def student_task_answer():
+    if 'username' not in session:
+        flash('Kirjaudu sisään vastataksesi tehtäviin', 'error')
+        return redirect("/")
+
+    if session.get('is_teacher'):
+        flash('Opettajat eivät voi vastata opiskelijoiden tehtäviin', 'error')
+        return redirect('/')
+
+    course_id = request.form['course_id']
+    task_id = request.form['task_id']
+    answer = request.form['answer']
+    student_user_id = session.get('user_id')
+    add_student_task_answer(student_user_id, task_id, answer)
+
+    return redirect(f'/student_course_page?course_id={course_id}')
 

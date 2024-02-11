@@ -24,7 +24,7 @@ Sovelluksen ominaisuuksia:
 
 Sovelluksen kehityksen tilanne (yllä olevasta kuvauksesta puuttuvat ominaisuudet):
 
-- Opiskelija voi ratkoa kurssin tehtäviä.
+- Opiskelija voi ratkoa kurssin tehtäviä (tällä hetkellä voi lähettää tekstimuotoisia vastauksia tehtäviin, tehtävien tarkistusta ei vielä tehty).
 - Opiskelija pystyy näkemään tilaston, mitkä kurssin tehtävät hän on ratkonut.
 - Opettaja pystyy näkemään kurssistaan tilaston mitkä kurssin tehtävät kukin on ratkonut.
 
