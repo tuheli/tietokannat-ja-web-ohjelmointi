@@ -65,6 +65,13 @@
                     {% endfor %}
                 </ul>
             </div>
+            <br>
+            <div>
+                <h2>Poista kurssi</h2>
+                <form action="/delete_course" method="POST">
+                    <input type="hidden" name="course_id" value="{{ course.id }}">
+                    <button type="submit" class="btn btn-danger">Poista kurssi</button>
+            </div>
         </div>
     </div>
 </div>

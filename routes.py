@@ -1,6 +1,6 @@
 from app import app
 from flask import flash, redirect, render_template, request, session
-from courses import add_course, add_task, get_course, get_answers, get_joined_courses, get_available_courses, get_course_materials, get_tasks, is_valid_new_course, update_materials
+from courses import add_course, add_task, delete_course_by_id, get_course, get_answers, get_joined_courses, get_available_courses, get_course_materials, get_tasks, is_valid_new_course, update_materials
 from db import db
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -176,3 +176,14 @@ def student_course_page():
     tasks = get_tasks(course_id)
 
     return render_template('student_course_page.html', course=course, materials=materials, tasks=tasks)
+
+@app.route('/delete_course', methods=['POST'])
+def delete_course():
+    if not session.get('is_teacher'):
+        flash('Vain opettajat voivat poistaa kursseja', 'error')
+        return redirect('/')
+
+    course_id = request.form['course_id']
+    delete_course_by_id(course_id)
+    return redirect('/')
+

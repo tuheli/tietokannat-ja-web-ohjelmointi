@@ -131,3 +131,12 @@ def get_answers(course_id):
     result = db.session.execute(sql, {"course_id": course_id})
     answers = result.fetchall()
     return answers
+
+def delete_course_by_id(course_id):
+    sql = text("""
+               DELETE FROM courses 
+               WHERE id = :course_id
+               """
+    )
+    db.session.execute(sql, {"course_id": course_id})
+    db.session.commit()
