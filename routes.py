@@ -1,6 +1,6 @@
 from app import app
 from flask import flash, redirect, render_template, request, session
-from courses import add_course, add_student_task_answer, add_task, delete_course_by_id, get_course, get_answers, get_course_students, get_joined_courses, get_available_courses, get_course_materials, get_student_task_answers, get_tasks, is_valid_new_course, update_course, update_materials
+from courses import add_course, add_free_form_task, add_multiple_choice_task, add_student_task_answer, add_task, delete_course_by_id, get_course, get_answers, get_course_students, get_free_form_tasks, get_joined_courses, get_available_courses, get_course_materials, get_multiple_choice_tasks, get_student_task_answers, get_tasks, is_valid_new_course, parse_multiple_choice_task_options, update_course, update_materials
 from db import db
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -108,8 +108,8 @@ def join_course():
     db.session.commit()
     return redirect('/')
 
-@app.route('/edit_course', methods=['GET'])
-def edit_course():
+@app.route('/teacher_edit_course', methods=['GET'])
+def teacher_edit_course():
     if not session.get('is_teacher'):
         flash('Vain opettajat voivat muokata kursseja', 'error')
         return redirect('/')
@@ -117,26 +117,11 @@ def edit_course():
     course_id = request.args.get('course_id')
     course = get_course(course_id)
     materials = get_course_materials(course_id)
-    tasks = get_tasks(course_id)
-    answers = get_answers(course_id)
     students = get_course_students(course_id)
-
-    # Nyt haetaan erikseen koko kurssin tehtävät ja vastaukset ja liitetään ne yhteen.
-
-    tasks_with_answers = {}
-    for task in tasks:
-        if task.id not in tasks_with_answers:
-            tasks_with_answers[task.id] = {
-                "task_id": task.id, 
-                "question": task.question, 
-                "answer_type": task.answer_type, 
-                "answers": []}
-        for answer in answers:
-            if answer.task_id == task.id:
-                tasks_with_answers[task.id]["answers"].append(answer.answer)
-
-    tasks_with_answers_list = list(tasks_with_answers.values())
-    return render_template('edit_course.html', course=course, materials=materials, tasks=tasks_with_answers_list, students=students)
+    option_count = request.args.get('option_count', default=4, type=int)
+    multiple_choice_tasks = get_multiple_choice_tasks(course_id)
+    free_form_tasks = get_free_form_tasks(course_id)
+    return render_template('teacher_edit_course.html', course=course, materials=materials, students=students, option_count=option_count, multiple_choice_tasks=multiple_choice_tasks, free_form_tasks=free_form_tasks)
 
 @app.route('/update_course_materials', methods=['POST'])
 def update_course_materials():
@@ -149,7 +134,7 @@ def update_course_materials():
 
     update_materials(course_id, materials)
     flash('Kurssimateriaali päivitetty onnistuneesti.', 'success')
-    return redirect(f'/edit_course?course_id={course_id}')
+    return redirect(f'/teacher_edit_course?course_id={course_id}')
 
 @app.route('/add_course_task', methods=['POST'])
 def add_course_task():
@@ -164,10 +149,36 @@ def add_course_task():
 
     if answer_type != "multiple_choice_answer" and answer_type != "open_answer":
         flash('Vastauksen tyyppi ei kelpaa', 'error')
-        return redirect(f'/edit_course?course_id={course_id}')
+        return redirect(f'/teacher_edit_course?course_id={course_id}')
 
     add_task(course_id, question, answer_type, task_answer)
-    return redirect(f'/edit_course?course_id={course_id}')
+    return redirect(f'/teacher_edit_course?course_id={course_id}')
+
+@app.route('/add_new_multiple_choice_task', methods=['POST'])
+def add_new_multiple_choice_task():
+    if not session.get('is_teacher'):
+        flash('Vain opettajat voivat lisätä tehtäviä', 'error')
+        return redirect('/')
+    
+    course_id = request.form['course_id']
+    question = request.form['question']
+    option_count = request.form['option_count']
+    options = parse_multiple_choice_task_options(request)
+    add_multiple_choice_task(course_id, question, options)
+    return redirect(f'/teacher_edit_course?course_id={course_id}&option_count={option_count}')
+
+@app.route('/add_new_free_form_task', methods=['POST'])
+def add_new_free_form_task():
+    if not session.get('is_teacher'):
+        flash('Vain opettajat voivat lisätä tehtäviä', 'error')
+        return redirect('/')
+    
+    course_id = request.form['course_id']
+    question = request.form['question']
+    evaluation_criteria = request.form['evaluation_criteria']
+    option_count = request.form['option_count']
+    add_free_form_task(course_id, question, evaluation_criteria)
+    return redirect(f'/teacher_edit_course?course_id={course_id}&option_count={option_count}')
 
 @app.route('/student_course_page', methods=['GET'])
 def student_course_page():
@@ -226,10 +237,10 @@ def update_course_title():
     
     if was_update_successful:
         flash('Kurssin nimi päivitettiin onnistuneesti', 'success')
-        return redirect(f'/edit_course?course_id={course_id}')
+        return redirect(f'/teacher_edit_course?course_id={course_id}')
     else:
         flash('Kurssin nimen päivitys epäonnistui. Nimen tulee olla määritelty ja se saa olla enintään 255 merkkiä pitkä.', 'error')
-        return redirect(f'/edit_course?course_id={course_id}')
+        return redirect(f'/teacher_edit_course?course_id={course_id}')
 
 @app.route('/student_task_answer', methods=['POST'])
 def student_task_answer():

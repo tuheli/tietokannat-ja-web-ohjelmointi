@@ -46,47 +46,84 @@
         </div>
     </div>
         <div class="col-md-6">
-            <h2>Lisää uusi tehtävä</h2>
-            <form action="/add_course_task" method="POST">
+            <h2>Lisää uusi monivalintatehtävä</h2>
+            <p>Vastausvaihtoehtojen määrä</p>
+            <form action="" method="GET">
+                <input type="hidden" name="course_id" value="{{ course.id }}">
+                <div>
+                    <input type="number" id="new_option_count" name="option_count" min="2" value="{{ option_count }}">
+                </div>
+                <br>
+                <div>
+                    <button type="submit" class="btn btn-primary">Muuta vastausvaihtoehtojen määrää</button>
+                </div>
+            </form>
+            <br>
+            <form action="/add_new_multiple_choice_task" method="POST">
                 <p>Tehtävän kysymys:</p>
                 <input type="hidden" name="course_id" value="{{ course.id }}">
                 <div class="form-group">
                     <textarea class="form-control" id="question" name="question" rows="3"></textarea>
                 </div>
-                <p>Tehtävän vastauksen tyyppi:</p>
-                <div>
-                    <input type="radio" name="answer_type" value="open_answer" checked> Vapaamuotoinen vastaus <br>
-                    <input type="radio" name="answer_type" value="multiple_choice_answer"> Monivalinta
+                <p>Tehtävän vastausvaihtoehdot:</p>
+                <div class="form-group">
+                    {% for i in range(option_count) %}
+                    <div style="display: flex; align-items: center">
+                        <input type="text" class="form-control" id="option{{ i+1 }}" name="options[{{ i }}][text]"placeholder="Vaihtoehto {{ i+1 }}">
+                        <input type="checkbox" id="correct{{ i+1 }}" name="options[{{ i }}][is_correct]">
+                        <label for="correct{{ i+1 }}">Oikein</label>
+                    </div>
+                    {% endfor %}
                 </div>
                 <br>
-                <p>Tehtävän vastaus:</p>
+                <button type="submit" class="btn btn-primary">Lisää monivalintatehtävä</button>
+                <br>
+                <input type="hidden" name="option_count" value="{{ option_count }}">
+            </form>
+            <br>
+            <h2>Lisää uusi vapaamuotoinen tehtävä</h2>
+            <form action="/add_new_free_form_task" method="POST">
+                <p>Tehtävän kysymys:</p>
+                <input type="hidden" name="course_id" value="{{ course.id }}">
                 <div class="form-group">
-                    <textarea class="form-control" id="task-answer" name="task_answer" rows="2"></textarea>
+                    <textarea class="form-control" id="question" name="question" rows="3"></textarea>
+                </div>
+                <p>Tehtävän arviointikriteerit:</p>
+                <div class="form-group">
+                    <textarea class="form-control" id="evaluation-criteria" name="evaluation_criteria" rows="5"></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">Lisää tehtävä</button>
+                <input type="hidden" name="option_count" value="{{ option_count }}">
             </form>
             <br>
             <div>
-                <h2>Kurssin tehtävät</h2>
+                <h2>Kurssin monivalintatehtävät</h2>
                 <ul class="list-group">
-                    {% for task in tasks %}
+                    {% for multiple_choice_task in multiple_choice_tasks %}
                     <li class="list-group-item">
-                        <div>Kysymys: {{ task.question }}</div>
-                        <div>Tyyppi: {{ 'Vapaamuotoinen vastaus' if task.answer_type == 'open_answer' else 'Monivalinta' }}</div>
-                        <div>Oikeat vastaukset:
+                        <div>Kysymys: {{ multiple_choice_task.question }}</div>
+                        <div>Vastausvaihtoehdot:
                             <ul>
-                                {% for answer in task.answers %}
-                                <li>{{ answer }}</li>
+                                {% for option in multiple_choice_task.options %}
+                                <li>{{ option.text }} {{ 'Oikein' if option.is_correct else 'Väärin' }}</li>
                                 {% else %}
-                                <p>Ei oikeita vastauksia.</p>
+                                <p>Ei vastausvaihtoehtoja.</p>
                                 {% endfor %}
                             </ul>
-                        </div>
                     </li>
-                    {% else %}
-                    <p>Kurssilla ei ole tehtäviä.</p>
                     {% endfor %}
                 </ul>
+            </div>
+            <br>
+            <div>
+                <h2>Kurssin vapaamuotoiset tehtävät</h2>
+                <ul class="list-group">
+                    {% for free_form_task in free_form_tasks %}
+                    <li class="list-group-item">
+                        <div>Kysymys: {{ free_form_task.question }}</div>
+                        <div>Arviointikriteerit: {{ free_form_task.evaluation_criteria }}</div>
+                    </li>
+                    {% endfor %}
             </div>
             <br>
             <div>

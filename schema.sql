@@ -36,6 +36,26 @@ CREATE TABLE task_answers (
     answer TEXT NOT NULL
 );
 
+CREATE TABLE free_form_tasks (
+    id SERIAL PRIMARY KEY,
+    course_id INTEGER REFERENCES courses(id) ON DELETE CASCADE,
+    question TEXT NOT NULL,
+    evaluation_criteria TEXT NOT NULL
+);
+
+CREATE TABLE multiple_choice_tasks (
+    id SERIAL PRIMARY KEY,
+    course_id INTEGER REFERENCES courses(id) ON DELETE CASCADE,
+    question TEXT NOT NULL
+);
+
+CREATE TABLE multiple_choice_task_options (
+    id SERIAL PRIMARY KEY,
+    task_id INTEGER REFERENCES multiple_choice_tasks(id) ON DELETE CASCADE,
+    option TEXT NOT NULL,
+    is_correct BOOLEAN NOT NULL
+);
+
 CREATE TABLE student_task_answers (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
