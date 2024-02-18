@@ -22,13 +22,14 @@ Sovelluksen ominaisuuksia:
 
 ### Sovelluksen kehityksen tilanne
 
-Sovelluksen kehityksen tilanne (yllä olevasta kuvauksesta puuttuvat ominaisuudet):
+Sovelluksesta puuttuu tehtävien oikeellisuuden tarkastus sekä tilastot. Ajatukseni on, että monivalintakysymykset tarkastetaan koneellisesti ja vapaamuotoiset vastaukset ovat ihmisten tarkistettavia.
 
-- Opiskelija voi ratkoa kurssin tehtäviä (tällä hetkellä voi lähettää tekstimuotoisia vastauksia tehtäviin, tehtävien tarkistusta ei vielä tehty).
+Yllä olevasta kuvauksesta puuttuvat ominaisuudet:
+
 - Opiskelija pystyy näkemään tilaston, mitkä kurssin tehtävät hän on ratkonut.
 - Opettaja pystyy näkemään kurssistaan tilaston mitkä kurssin tehtävät kukin on ratkonut.
 
-Ominaisuuksista on toteutettu 12 / 15.
+Ominaisuuksista on toteutettu 13 / 15.
 
 ### Sovelluksen käynnistysohjeet
 
