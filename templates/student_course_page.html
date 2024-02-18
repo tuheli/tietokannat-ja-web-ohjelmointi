@@ -20,24 +20,39 @@
         </div>
         <div class="col-md-6">
             <div>
-                <h2>Kurssin tehtävät</h2>
-                {% if task_count == 0 %}
-                <p>Kurssilla ei ole tehtäviä.</p>
-                {% else %}
-                {% if tasks_without_given_answers|length == 0 %}
-                <br>
-                <h4>Hyvä, olen vastannut kaikkiin tehtäviin</h4>
-                {% else %}
-                <br>
-                <h4>Tehtävät, joihin en ole vielä vastannut</h4>
+                <h2>Kurssin monivalintatehtävät</h2>
                 <ul class="list-group">
-                    {% for task in tasks_without_given_answers %}
+                    {% for multiple_choice_task in multiple_choice_tasks %}
                     <li class="list-group-item">
-                        <div>Kysymys: {{ task.question }}</div>
-                        <br>
+                        <div>Kysymys: {{ multiple_choice_task.question }}</div>
+                        <form action="student_add_new_multiple_choice_task_submission" method="POST">
+                            <ul>
+                                {% for option in multiple_choice_task.options %}
+                                <li>
+                                    {{ option.text }}
+                                    <input type="hidden" name="all_options[{{ option.id }}]" value="{{ option.id }}">
+                                    <input type="checkbox" name="selected_options[{{ option.id }}]" value="{{ option.id }}">
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            <button type="submit" class="btn btn-primary">Lähetä vastaus</button>
+                            <input type="hidden" name="course_id" value="{{ course.id }}">
+                            <input type="hidden" name="task_id" value="{{ multiple_choice_task.id }}">
+                        </form>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <br>
+            <div>
+                <h2>Kurssin vapaamuotoiset tehtävät</h2>
+                <ul class="list-group">
+                    {% for free_form_task in free_form_tasks %}
+                    <li class="list-group-item">
+                        <div>Kysymys: {{ free_form_task.question }}</div>
                         <div>Vastaukseni:</div>
-                        <form action="/student_task_answer" method="post">
-                            <input type="hidden" name="task_id" value="{{ task.task_id }}">
+                        <form action="/student_add_new_free_form_task_answer" method="post">
+                            <input type="hidden" name="task_id" value="{{ free_form_task.id }}">
                             <input type="hidden" name="course_id" value="{{ course.id }}">
                             <textarea class="form-control" id="answer" name="answer" rows="5"></textarea>
                             <br>
@@ -46,45 +61,41 @@
                     </li>
                     {% endfor %}
                 </ul>
-                {% endif %}
-                {% endif %}
             </div>
+            <br>
             <div>
-                {% if tasks_without_given_answers|length == 0 %}
+                <h2>Lähettämäni vastaukset</h2>
                 <br>
-                <h4>Tehtävät ja antamani vastaukset</h4>
-                {% else %}
+                <div>
+                    <h4>Vapaamuotoiset tehtävät</h4>
+                    <br>
+                    <ul class="list-group">
+                        {% for free_form_submission in free_form_submissions %}
+                        <li class="list-group-item">
+                            <div>Kysymys {{ free_form_submission.task_id }} : {{ free_form_submission.question }}</div>
+                            <div>Vastaukseni: {{ free_form_submission.answer }}</div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
                 <br>
-                <h4>Tehtävät, joihin olen antanut vastauksen</h4>
-                {% endif %}
-                {% if tasks_with_given_answers|length == 0 %}
-                <p>En ole vielä vastannut mihinkään tehtävään</p>
-                {% else %}
-                <ul class="list-group">
-                    {% for task in tasks_with_given_answers %}
-                    <li class="list-group-item">
-                        <div>Kysymys: {{ task.question }}</div>
+                <div>
+                    <h4>Monivalintatehtävät</h4>
+                    <ul class="list-group">
+                        {% for multiple_choice_submission in multiple_choice_submissions %}
                         <br>
-                        <div>Lähettämäni vastaukset
-                            <ul>
-                                {% for answer in task.answers %}
-                                <li>{{ answer }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        <br>
-                        <div>Uusi vastaukseni (vanhat vastaukset säilyvät):</div>
-                        <form action="/student_task_answer" method="post">
-                            <input type="hidden" name="task_id" value="{{ task.task_id }}">
-                            <input type="hidden" name="course_id" value="{{ course.id }}">
-                            <textarea class="form-control" id="answer" name="answer" rows="5"></textarea>
+                        <li class="list-group-item">
+                            <div>Kysymys {{ multiple_choice_submission.task_id }} : {{ multiple_choice_submission.question }}
+                            </div>
                             <br>
-                            <button type="submit" class="btn btn-primary">Lähetä uusi vastaus</button>
-                        </form>
-                    </li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
+                            {% for option in multiple_choice_submission.options %}
+                            <div>{{ option.text }} - {% if option.students_choice %}oikein{% else %}väärin{% endif %}
+                            </div>
+                            {% endfor %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

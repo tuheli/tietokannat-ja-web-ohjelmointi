@@ -1,6 +1,6 @@
 from app import app
 from flask import flash, redirect, render_template, request, session
-from courses import add_course, add_free_form_task, add_multiple_choice_task, add_student_task_answer, add_task, delete_course_by_id, get_course, get_answers, get_course_students, get_free_form_tasks, get_joined_courses, get_available_courses, get_course_materials, get_multiple_choice_tasks, get_student_task_answers, get_tasks, is_valid_new_course, parse_multiple_choice_task_options, update_course, update_materials
+from courses import add_course, add_free_form_task, add_multiple_choice_task, add_free_form_task_submission, add_multiple_choice_task_submission, add_student_task_answer, add_task, delete_course_by_id, get_course, get_answers, get_course_students, get_free_form_tasks, get_free_form_tasks_without_evaluation_criteria, get_joined_courses, get_available_courses, get_course_materials, get_multiple_choice_tasks, get_multiple_choice_tasks_without_correct_answers, get_free_form_task_submissions, get_students_multiple_choice_task_answers, get_student_task_answers, get_tasks, is_valid_new_course, parse_multiple_choice_task_options, parse_multiple_choice_task_submission, students_multiple_choice_answers_to_submissions, update_course, update_materials
 from db import db
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -183,36 +183,15 @@ def add_new_free_form_task():
 @app.route('/student_course_page', methods=['GET'])
 def student_course_page():
     course_id = request.args.get('course_id')
+    user_id = session.get('user_id')
     course = get_course(course_id)
     materials = get_course_materials(course_id)
-    tasks = get_tasks(course_id)
-    student_task_answers = get_student_task_answers(session.get('user_id'), course_id)
-
-    # Haetaan erikseen kurssin tehtävät ja annetut vastaukset ja liitetään ne yhteen. Ajatuksena on, että opiskelija voi antaa useita vastauksia samaan tehtävään ja paras vastaus arvioidaan. Siksi tallennetaan useita vastauksia.
-
-    tasks_mapped_with_given_answers = {}
-    for task in tasks:
-        if task.id not in tasks_mapped_with_given_answers:
-            tasks_mapped_with_given_answers[task.id] = {
-                "task_id": task.id, 
-                "question": task.question, 
-                "answers": []}
-        for answer in student_task_answers:
-            if answer.task_id == task.id:
-                tasks_mapped_with_given_answers[task.id]["answers"].append(answer.answer)
-
-    tasks_mapped_with_given_answers_list = list(tasks_mapped_with_given_answers.values())
-    
-    tasks_without_given_answers = []
-    tasks_with_given_answers = []
-
-    for task in tasks_mapped_with_given_answers_list:
-        if len(task["answers"]) == 0:
-            tasks_without_given_answers.append(task)
-        else:
-            tasks_with_given_answers.append(task)
-
-    return render_template('student_course_page.html', course=course, materials=materials, tasks_with_given_answers=tasks_with_given_answers, tasks_without_given_answers=tasks_without_given_answers, task_count=len(tasks))
+    free_form_tasks = get_free_form_tasks_without_evaluation_criteria(course_id)
+    free_form_submissions = get_free_form_task_submissions(user_id, course_id)
+    multiple_choice_tasks = get_multiple_choice_tasks_without_correct_answers(course_id)
+    multiple_choice_answers = get_students_multiple_choice_task_answers(user_id, course_id)
+    choices_to_submissions = students_multiple_choice_answers_to_submissions(multiple_choice_answers)
+    return render_template('student_course_page.html', course=course, materials=materials, free_form_tasks=free_form_tasks, free_form_submissions=free_form_submissions, multiple_choice_tasks=multiple_choice_tasks, multiple_choice_submissions=choices_to_submissions)
 
 @app.route('/delete_course', methods=['POST'])
 def delete_course():
@@ -260,3 +239,36 @@ def student_task_answer():
 
     return redirect(f'/student_course_page?course_id={course_id}')
 
+@app.route('/add_new_free_form_task_submission', methods=['POST'])
+def add_new_free_form_task_submission():
+    if "username" not in session:
+        flash('Kirjaudu sisään vastataksesi tehtäviin', 'error')
+        return redirect("/")
+
+    if session.get('is_teacher'):
+        flash('Opettajat eivät voi vastata opiskelijoiden tehtäviin', 'error')
+        return redirect("/")
+
+    course_id = request.form['course_id']
+    task_id = request.form['task_id']
+    answer = request.form['answer']
+    student_user_id = session.get('user_id')
+    add_free_form_task_submission(student_user_id, task_id, answer)
+    return redirect(f'/student_course_page?course_id={course_id}')
+
+@app.route('/student_add_new_multiple_choice_task_submission', methods=['POST'])
+def add_student_new_multiple_choice_task_submission():
+    if "username" not in session:
+        flash('Kirjaudu sisään vastataksesi tehtäviin', 'error')
+        return redirect("/")
+
+    if session.get('is_teacher'):
+        flash('Opettajat eivät voi vastata opiskelijoiden tehtäviin', 'error')
+        return redirect("/")
+    
+    course_id = request.form['course_id']
+    task_id = request.form['task_id']
+    student_user_id = session['user_id']
+    submission = parse_multiple_choice_task_submission(request)
+    add_multiple_choice_task_submission(student_user_id, task_id, submission)
+    return redirect(f'/student_course_page?course_id={course_id}')
