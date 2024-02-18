@@ -12,7 +12,7 @@
           <ul class="list-group">
               {% for course in courses %}
                 <li class="list-group-item">
-                    <a href="{{ url_for('teacher_edit_course', course_id=course.id) }}">{{ course.title }}</a>
+                    <a href="{{ url_for('teacher.edit_course', course_id=course.id) }}">{{ course.title }}</a>
                 </li>
               {% else %}
               <li class="list-group-item">Sinulla ei ole kursseja.</li>

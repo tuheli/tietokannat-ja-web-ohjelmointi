@@ -26,6 +26,7 @@
         <br>
         <div>
             <h2>Kurssin tilastotietoja</h2>
+            <br>
 
             {% if students|length == 1 %}
             <p>Kurssilla on {{ students|length }} opiskelija.</p>
@@ -38,7 +39,7 @@
             <ul class="list-group">
                 {% for student in students %}
                 <li class="list-group-item">
-                    <div>{{ student.username }}</div>
+                    {{ student.username }}
                 </li>
                 {% endfor %}
             </ul>
@@ -51,7 +52,7 @@
             <form action="" method="GET">
                 <input type="hidden" name="course_id" value="{{ course.id }}">
                 <div>
-                    <input type="number" id="new_option_count" name="option_count" min="2" value="{{ option_count }}">
+                    <input type="number" id="new_option_count" name="option_count" min="2" max="30" value="{{ option_count }}">
                 </div>
                 <br>
                 <div>
@@ -105,7 +106,7 @@
                         <div>Vastausvaihtoehdot:
                             <ul>
                                 {% for option in multiple_choice_task.options %}
-                                <li>{{ option.text }} {{ 'Oikein' if option.is_correct else 'Väärin' }}</li>
+                                <li>{{ option.text }} - {{ 'oikein' if option.is_correct else 'väärin' }}</li>
                                 {% else %}
                                 <p>Ei vastausvaihtoehtoja.</p>
                                 {% endfor %}

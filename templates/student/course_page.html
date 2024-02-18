@@ -14,18 +14,21 @@
     <div class="row">
         <div class="col-md-6">
             <h2>Kurssin tekstimateriaali</h2>
-            <div class="form-group">
-                <textarea class="form-control" id="materials" name="materials" rows="20">{{ materials }}</textarea>
+            <div>
+                {{ materials }}
             </div>
         </div>
         <div class="col-md-6">
             <div>
                 <h2>Kurssin monivalintatehtävät</h2>
+                {% if multiple_choice_tasks|length == 0 %}
+                <p>Kurssilla ei ole monivalintatehtäviä.</p>
+                {% else %}
                 <ul class="list-group">
                     {% for multiple_choice_task in multiple_choice_tasks %}
                     <li class="list-group-item">
                         <div>Kysymys: {{ multiple_choice_task.question }}</div>
-                        <form action="student_add_new_multiple_choice_task_submission" method="POST">
+                        <form action="add_new_multiple_choice_task_submission" method="POST">
                             <ul>
                                 {% for option in multiple_choice_task.options %}
                                 <li>
@@ -42,16 +45,20 @@
                     </li>
                     {% endfor %}
                 </ul>
+                {% endif %}
             </div>
             <br>
             <div>
                 <h2>Kurssin vapaamuotoiset tehtävät</h2>
+                {% if free_form_tasks|length == 0 %}
+                <p>Kurssilla ei ole vapaamuotoisia tehtäviä.</p>
+                {% else %}
                 <ul class="list-group">
                     {% for free_form_task in free_form_tasks %}
                     <li class="list-group-item">
                         <div>Kysymys: {{ free_form_task.question }}</div>
                         <div>Vastaukseni:</div>
-                        <form action="/student_add_new_free_form_task_answer" method="post">
+                        <form action="/add_new_free_form_task_submission" method="post">
                             <input type="hidden" name="task_id" value="{{ free_form_task.id }}">
                             <input type="hidden" name="course_id" value="{{ course.id }}">
                             <textarea class="form-control" id="answer" name="answer" rows="5"></textarea>
@@ -61,6 +68,7 @@
                     </li>
                     {% endfor %}
                 </ul>
+                {% endif %}
             </div>
             <br>
             <div>
@@ -68,24 +76,32 @@
                 <br>
                 <div>
                     <h4>Vapaamuotoiset tehtävät</h4>
+                    {% if free_form_submissions|length == 0 %}
+                    <p>En ole lähettänyt vapaamuotoisia tehtäviä.</p>
+                    {% else %}
                     <br>
                     <ul class="list-group">
                         {% for free_form_submission in free_form_submissions %}
                         <li class="list-group-item">
-                            <div>Kysymys {{ free_form_submission.task_id }} : {{ free_form_submission.question }}</div>
+                            <div>Kysymys: {{ free_form_submission.question }}</div>
+                            <br>
                             <div>Vastaukseni: {{ free_form_submission.answer }}</div>
                         </li>
                         {% endfor %}
                     </ul>
+                    {% endif %}
                 </div>
                 <br>
                 <div>
                     <h4>Monivalintatehtävät</h4>
+                    {% if multiple_choice_submissions|length == 0 %}
+                    <p>En ole lähettänyt monivalintatehtäviä.</p>
+                    {% else %}
                     <ul class="list-group">
                         {% for multiple_choice_submission in multiple_choice_submissions %}
                         <br>
                         <li class="list-group-item">
-                            <div>Kysymys {{ multiple_choice_submission.task_id }} : {{ multiple_choice_submission.question }}
+                            <div>Kysymys: {{ multiple_choice_submission.question }}
                             </div>
                             <br>
                             {% for option in multiple_choice_submission.options %}
@@ -95,6 +111,7 @@
                         </li>
                         {% endfor %}
                     </ul>
+                    {% endif %}
                 </div>
             </div>
         </div>
