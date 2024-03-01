@@ -14,6 +14,9 @@
   <div class="row">
     <div class="col-md-6">
         <div>
+            <h2>Kurssin kuvaus</h2>
+            <div>{{ course.description }}</div>
+            <br>
             <h2>Kurssin tekstimateriaali</h2>
             <form action="/update_course_materials" method="POST">
                 <input type="hidden" name="course_id" value="{{ course.id }}">
