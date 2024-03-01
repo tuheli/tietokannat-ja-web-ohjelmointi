@@ -2,6 +2,7 @@ from flask import Blueprint, abort, flash, redirect, render_template, request, s
 import services.courses as course_service
 import services.multiple_choice_tasks as multiple_choice_task_service
 import services.free_form_tasks as free_form_task_service
+import services.statistics as statistics_service
 
 teacher = Blueprint("teacher", __name__)
 
@@ -16,9 +17,11 @@ def edit_course():
     option_count = request.args.get('option_count', default=4, type=int)
     course = course_service.get(course_id)
     materials = course_service.get_materials(course_id)
-    students = course_service.get_students(course_id)
+    # students = course_service.get_students(course_id)
+    students = statistics_service.get_students_with_submissions(course_id)
     multiple_choice_tasks = multiple_choice_task_service.get(course_id)
     free_form_tasks = free_form_task_service.get(course_id)
+    course_statistics = statistics_service.get_course_statistics(course_id)
     return render_template(
         'teacher/edit_course.html',
         course=course,
@@ -26,7 +29,8 @@ def edit_course():
         students=students,
         option_count=option_count,
         multiple_choice_tasks=multiple_choice_tasks,
-        free_form_tasks=free_form_tasks)
+        free_form_tasks=free_form_tasks,
+        course_statistics=course_statistics)
 
 
 @teacher.route('/create_course', methods=['POST'])

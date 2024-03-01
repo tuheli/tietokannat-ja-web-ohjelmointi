@@ -39,11 +39,12 @@
             {% endif %}
 
             {% if students|length > 0 %}
-            <p>Kurssin opiskelijat ovat:</p>
+            <p>Kurssin tilastotietoja:</p>
             <ul class="list-group">
                 {% for student in students %}
                 <li class="list-group-item">
-                    {{ student.username }}
+                    <p>opiskelija {{ student.username }}</p>
+                    <p>vastannut {{ student.submissions|length }} / {{ multiple_choice_tasks|length + free_form_tasks|length }} tehtävään</p>
                 </li>
                 {% endfor %}
             </ul>
