@@ -59,5 +59,10 @@ def add_new_free_form_task_submission():
     task_id = request.form['task_id']
     answer = request.form['answer']
     student_user_id = session.get('user_id')
+
+    if not answer:
+        flash("Vastaus puuttuu", "error")
+        return redirect(f'/course_page?course_id={course_id}')
+
     free_form_task_service.create_submission(student_user_id, task_id, answer)
     return redirect(f'/course_page?course_id={course_id}')
