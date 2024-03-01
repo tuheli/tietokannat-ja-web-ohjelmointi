@@ -3,6 +3,7 @@ from flask import Blueprint, abort, redirect, render_template, request, session
 import services.courses as course_service
 import services.free_form_tasks as free_form_task_service
 import services.multiple_choice_tasks as multiple_choice_task_service
+import services.statistics as statistics_service
 
 student = Blueprint("student", __name__)
 
@@ -17,6 +18,7 @@ def course_page():
     free_form_submissions = free_form_task_service.get_submissions(user_id, course_id)
     multiple_choice_tasks = multiple_choice_task_service.get_without_answers(course_id)
     multiple_choice_submissions = multiple_choice_task_service.get_submissions(user_id, course_id)
+    statistics = statistics_service.get_submission_statistics(user_id, course_id)
     return render_template(
         'student/course_page.html',
         course=course,
@@ -24,7 +26,8 @@ def course_page():
         free_form_tasks=free_form_tasks,
         free_form_submissions=free_form_submissions,
         multiple_choice_tasks=multiple_choice_tasks,
-        multiple_choice_submissions=multiple_choice_submissions)
+        multiple_choice_submissions=multiple_choice_submissions,
+        statistics=statistics)
 
 
 @student.route('/add_new_multiple_choice_task_submission', methods=['POST'])

@@ -74,3 +74,4 @@ def get_submissions(user_id, course_id):
         sql, {"user_id": user_id, "course_id": course_id})
     submissions = result.fetchall()
     return submissions
+
