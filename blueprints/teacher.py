@@ -100,6 +100,11 @@ def add_new_multiple_choice_task():
 
     course_id = request.form['course_id']
     question = request.form['question']
+
+    if not question:
+        flash("Kysymys puuttuu", "error")
+        return redirect(f'/edit_course?course_id={course_id}')
+
     option_count = request.form['option_count']
     options = multiple_choice_task_service.parse_options(request)
     multiple_choice_task_service.create_task(course_id, question, options)

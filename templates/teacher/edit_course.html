@@ -21,7 +21,7 @@
             <form action="/update_course_materials" method="POST">
                 <input type="hidden" name="course_id" value="{{ course.id }}">
                 <div class="form-group">
-                    <textarea class="form-control" id="materials" name="materials" rows="5">{{ materials }}</textarea>
+                    <textarea class="form-control" id="materials" name="materials" rows="5" required>{{ materials }}</textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">Päivitä tekstimateriaali</button>
             </form>
@@ -67,13 +67,13 @@
                 <p>Tehtävän kysymys:</p>
                 <input type="hidden" name="course_id" value="{{ course.id }}">
                 <div class="form-group">
-                    <textarea class="form-control" id="question" name="question" rows="3"></textarea>
+                    <textarea class="form-control" id="question" name="question" rows="3" required></textarea>
                 </div>
                 <p>Tehtävän vastausvaihtoehdot:</p>
                 <div class="form-group">
                     {% for i in range(option_count) %}
                     <div style="display: flex; align-items: center">
-                        <input type="text" class="form-control" id="option{{ i+1 }}" name="options[{{ i }}][text]"placeholder="Vaihtoehto {{ i+1 }}">
+                        <input type="text" class="form-control" id="option{{ i+1 }}" name="options[{{ i }}][text]"placeholder="Vaihtoehto {{ i+1 }}" required>
                         <input type="checkbox" id="correct{{ i+1 }}" name="options[{{ i }}][is_correct]">
                         <label for="correct{{ i+1 }}">Oikein</label>
                     </div>
@@ -90,11 +90,11 @@
                 <p>Tehtävän kysymys:</p>
                 <input type="hidden" name="course_id" value="{{ course.id }}">
                 <div class="form-group">
-                    <textarea class="form-control" id="question" name="question" rows="3"></textarea>
+                    <textarea class="form-control" id="question" name="question" rows="3" required></textarea>
                 </div>
                 <p>Tehtävän arviointikriteerit:</p>
                 <div class="form-group">
-                    <textarea class="form-control" id="evaluation-criteria" name="evaluation_criteria" rows="5"></textarea>
+                    <textarea class="form-control" id="evaluation-criteria" name="evaluation_criteria" rows="5" required></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">Lisää tehtävä</button>
                 <input type="hidden" name="option_count" value="{{ option_count }}">
