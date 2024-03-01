@@ -17,6 +17,14 @@ def login():
     username = request.form["username"]
     password = request.form["password"]
 
+    if not username:
+        flash("Käyttäjätunnus puuttuu", "error")
+        return redirect("/")
+    
+    if not password:
+        flash("Salasana puuttuu", "error")
+        return redirect("/")
+
     sql = text(
         "SELECT id, password_hash, is_teacher FROM users WHERE username=:username")
     result = db.session.execute(sql, {"username": username})
