@@ -152,24 +152,22 @@ def parse_options(request):
 
 
 def parse_submission(request):
+    def get_option_id(key):
+        option_id_start = key.find('[') + 1
+        option_id_end = key.find(']', option_id_start)
+        return int(key[option_id_start:option_id_end])
+
     form_keys = request.form.keys()
     selected_options = {}
+    all_options = {}
+
     for key in form_keys:
         if key.startswith('selected_options'):
-            option_id_start = key.find('[') + 1
-            option_id_end = key.find(']', option_id_start)
-            option_id = int(key[option_id_start:option_id_end])
-            if option_id not in selected_options:
-                selected_options[option_id] = {'students_choice': True}
-
-    all_options = {}
-    for key in form_keys:
-        if key.startswith('all_options'):
-            option_id_start = key.find('[') + 1
-            option_id_end = key.find(']', option_id_start)
-            option_id = int(key[option_id_start:option_id_end])
-            if option_id not in all_options:
-                all_options[option_id] = 1
+            option_id = get_option_id(key)
+            selected_options[option_id] = {'students_choice': True}
+        elif key.startswith('all_options'):
+            option_id = get_option_id(key)
+            all_options[option_id] = 1
 
     for key in all_options:
         if key not in selected_options:
