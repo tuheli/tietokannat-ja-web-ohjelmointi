@@ -23,7 +23,7 @@ def login():
     
     if not password:
         flash("Salasana puuttuu", "error")
-        return redirect("/")
+        return render_template("auth/login.html", username=username)
 
     sql = text(
         "SELECT id, password_hash, is_teacher FROM users WHERE username=:username")
@@ -32,7 +32,7 @@ def login():
 
     if not user:
         flash('Käyttäjätunnus ei kelpaa', 'error')
-        return redirect("/")
+        return render_template("auth/login.html", username=username)
     else:
         hash_value = user.password_hash
         if check_password_hash(hash_value, password):
@@ -43,7 +43,7 @@ def login():
             return redirect("/")
         else:
             flash('Salasana ei kelpaa', 'error')
-            return redirect("/")
+            return render_template("auth/login.html", username=username)
 
 
 @auth.route("/register", methods=["GET", "POST"])
