@@ -20,6 +20,7 @@
             <h2>Kurssin tekstimateriaali</h2>
             <form action="/update_course_materials" method="POST">
                 <input type="hidden" name="course_id" value="{{ course.id }}">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                 <div class="form-group">
                     <textarea class="form-control" id="materials" name="materials" rows="5" required>{{ materials }}</textarea>
                 </div>
@@ -54,6 +55,7 @@
             <p>Vastausvaihtoehtojen määrä</p>
             <form action="" method="GET">
                 <input type="hidden" name="course_id" value="{{ course.id }}">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                 <div>
                     <input type="number" id="new_option_count" name="option_count" min="2" max="30" value="{{ option_count }}">
                 </div>
@@ -66,6 +68,7 @@
             <form action="/add_new_multiple_choice_task" method="POST">
                 <p>Tehtävän kysymys:</p>
                 <input type="hidden" name="course_id" value="{{ course.id }}">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                 <div class="form-group">
                     <textarea class="form-control" id="question" name="question" rows="3" required></textarea>
                 </div>
@@ -89,6 +92,7 @@
             <form action="/add_new_free_form_task" method="POST">
                 <p>Tehtävän kysymys:</p>
                 <input type="hidden" name="course_id" value="{{ course.id }}">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                 <div class="form-group">
                     <textarea class="form-control" id="question" name="question" rows="3" required></textarea>
                 </div>
@@ -134,6 +138,7 @@
                 <h2>Muokkaa kurssia</h2>
                 <form action="/update_course_title" method="POST">
                     <input type="hidden" name="course_id" value="{{ course.id }}">
+                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                     <div class="form-group">
                         <label for="title">Kurssin uusi nimi</label>
                         <input type="text" class="form-control" id="new_title" name="new_title">
@@ -146,6 +151,7 @@
                 <h2>Poista kurssi</h2>
                 <form action="/delete_course" method="POST">
                     <input type="hidden" name="course_id" value="{{ course.id }}">
+                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                     <button type="submit" class="btn btn-danger">Poista kurssi</button>
                 </form>
             </div>

@@ -1,3 +1,4 @@
+import secrets
 from flask import Blueprint, redirect, render_template, request, session, flash
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -39,6 +40,8 @@ def login():
             session["username"] = username
             session["is_teacher"] = user.is_teacher
             session["user_id"] = user.id
+            session["csrf_token"] = secrets.token_hex(16)
+
             flash('Onnistunut kirjautuminen', 'success')
             return redirect("/")
         else:

@@ -26,6 +26,7 @@
             <li class="list-group-item">
               <form action="join_course" method="POST">
                 <input type="hidden" name="course_id" value="{{ course.id }}">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                 <button type="submit" class="btn btn-link">{{course.title}}</button>
               </form>
             </li>

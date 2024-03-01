@@ -41,6 +41,7 @@
                             <button type="submit" class="btn btn-primary">Lähetä vastaus</button>
                             <input type="hidden" name="course_id" value="{{ course.id }}">
                             <input type="hidden" name="task_id" value="{{ multiple_choice_task.id }}">
+                            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                         </form>
                     </li>
                     {% endfor %}
@@ -61,6 +62,7 @@
                         <form action="/add_new_free_form_task_submission" method="post">
                             <input type="hidden" name="task_id" value="{{ free_form_task.id }}">
                             <input type="hidden" name="course_id" value="{{ course.id }}">
+                            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                             <textarea class="form-control" id="answer" name="answer" rows="5" required></textarea>
                             <br>
                             <button type="submit" class="btn btn-primary">Lähetä vastaus</button>

@@ -1,5 +1,5 @@
 from curses import flash
-from flask import Blueprint, redirect, render_template, request, session
+from flask import Blueprint, abort, redirect, render_template, request, session
 import services.courses as course_service
 import services.free_form_tasks as free_form_task_service
 import services.multiple_choice_tasks as multiple_choice_task_service
@@ -36,6 +36,9 @@ def add_new_multiple_choice_task_submission():
     if session.get('is_teacher'):
         flash('Opettajat eivät voi vastata opiskelijoiden tehtäviin', 'error')
         return redirect("/")
+    
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
 
     course_id = request.form['course_id']
     task_id = request.form['task_id']
@@ -54,6 +57,9 @@ def add_new_free_form_task_submission():
     if session.get('is_teacher'):
         flash('Opettajat eivät voi vastata opiskelijoiden tehtäviin', 'error')
         return redirect("/")
+    
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
 
     course_id = request.form['course_id']
     task_id = request.form['task_id']

@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, redirect, render_template, request, session
+from flask import Blueprint, abort, flash, redirect, render_template, request, session
 import services.courses as course_service
 import services.multiple_choice_tasks as multiple_choice_task_service
 import services.free_form_tasks as free_form_task_service
@@ -31,9 +31,16 @@ def edit_course():
 
 @teacher.route('/create_course', methods=['POST'])
 def create_course():
+    if not session.get('username'):
+        flash('Vain kirjautuneet käyttäjät voivat luoda kursseja', 'error')
+        return redirect('/')
+
     if not session.get('is_teacher'):
         flash('Vain opettajat voivat luoda kursseja', 'error')
         return redirect('/')
+    
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
 
     title = request.form['title']
     description = request.form['description']
@@ -49,9 +56,16 @@ def create_course():
 
 @teacher.route('/update_course_materials', methods=['POST'])
 def update_course_materials():
+    if not session.get('username'):
+        flash('Vain kirjautuneet käyttäjät voivat muokata kursseja', 'error')
+        return redirect('/')
+
     if not session.get('is_teacher'):
         flash('Vain opettajat voivat muokata kursseja', 'error')
         return redirect('/')
+    
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
 
     course_id = request.form['course_id']
     materials = request.form['materials']
@@ -63,9 +77,16 @@ def update_course_materials():
 
 @teacher.route('/delete_course', methods=['POST'])
 def delete_course():
+    if not session.get('username'):
+        flash('Vain kirjautuneet käyttäjät voivat poistaa kursseja', 'error')
+        return redirect('/')
+
     if not session.get('is_teacher'):
         flash('Vain opettajat voivat poistaa kursseja', 'error')
         return redirect('/')
+    
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
 
     course_id = request.form['course_id']
     course_service.delete(course_id)
@@ -74,9 +95,16 @@ def delete_course():
 
 @teacher.route('/update_course_title', methods=['POST'])
 def update_course_title():
+    if not session.get('username'):
+        flash('Vain kirjautuneet käyttäjät voivat muokata kursseja', 'error')
+        return redirect('/')
+
     if not session.get('is_teacher'):
         flash('Vain opettajat voivat muokata kursseja', 'error')
         return redirect('/')
+    
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
 
     course_id = request.form['course_id']
     new_title = request.form['new_title']
@@ -94,9 +122,16 @@ def update_course_title():
 
 @teacher.route('/add_new_multiple_choice_task', methods=['POST'])
 def add_new_multiple_choice_task():
+    if not session.get('username'):
+        flash('Vain kirjautuneet käyttäjät voivat lisätä tehtäviä', 'error')
+        return redirect('/')
+    
     if not session.get('is_teacher'):
         flash('Vain opettajat voivat lisätä tehtäviä', 'error')
         return redirect('/')
+    
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
 
     course_id = request.form['course_id']
     question = request.form['question']
@@ -113,9 +148,16 @@ def add_new_multiple_choice_task():
 
 @teacher.route('/add_new_free_form_task', methods=['POST'])
 def add_new_free_form_task():
+    if not session.get('username'):
+        flash('Vain kirjautuneet käyttäjät voivat lisätä tehtäviä', 'error')
+        return redirect('/')
+
     if not session.get('is_teacher'):
         flash('Vain opettajat voivat lisätä tehtäviä', 'error')
         return redirect('/')
+    
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
 
     course_id = request.form['course_id']
     question = request.form['question']
