@@ -6,7 +6,7 @@
 <form action="/register" method="POST">
   <p>
     Tunnus:<br />
-    <input type="text" name="username" required />
+    <input type="text" name="username" required value="{{ username }}" />
   </p>
   <p>
     Salasana:<br />
@@ -14,7 +14,7 @@
   </p>
   <p>
     <label>
-        <input type="checkbox" name="is_teacher" value="true">
+        <input type="checkbox" name="is_teacher" value="true" {{ 'checked' if is_teacher else '' }}>
         Rekisteröidy opettajana
     </label>
 </p>

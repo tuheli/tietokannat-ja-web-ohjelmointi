@@ -55,11 +55,11 @@ def register():
 
         if (len(username) < 4 or len(username) > 16):
             flash('Käyttäjätunnuksen pituus on oltava 4-16 merkkiä', 'error')
-            return redirect("/register")
+            return render_template("auth/register.html", username=username, is_teacher=is_teacher)
 
         if (len(password) < 4 or len(password) > 128):
             flash('Salasanan pituus on oltava 4-128 merkkiä', 'error')
-            return redirect("/register")
+            return render_template("auth/register.html", username=username, is_teacher=is_teacher)
 
         sql = text("SELECT id FROM users WHERE username=:username")
         result = db.session.execute(sql, {"username": username})
@@ -67,7 +67,7 @@ def register():
 
         if user:
             flash('Tunnus on jo käytössä', 'error')
-            return redirect("/register")
+            return render_template("auth/register.html", username=username, is_teacher=is_teacher)
         else:
             hash_value = generate_password_hash(password)
 
