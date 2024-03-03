@@ -10,6 +10,14 @@ student = Blueprint("student", __name__)
 
 @student.route('/course_page', methods=['GET'])
 def course_page():
+    if "username" not in session:
+        flash("Kirjaudu sisään niin voit tarkastella kurssisivua", "error")
+        return redirect("/")
+
+    if session.get("is_teacher"):
+        flash("Opettajat eivät voi tarkastella opiskelijoiden kurssisivuja", "error")
+        return redirect("/")
+
     course_id = request.args.get('course_id')
     user_id = session.get('user_id')
     course = course_service.get(course_id)
