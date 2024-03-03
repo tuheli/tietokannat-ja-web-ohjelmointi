@@ -45,6 +45,13 @@
                 <li class="list-group-item">
                     <p>opiskelija {{ student.username }}</p>
                     <p>vastannut {{ student.submissions|length }} / {{ multiple_choice_tasks|length + free_form_tasks|length }} tehtävään</p>
+                    <form action="/view_student_submissions", method="POST">
+                        <input type="hidden" name="course_id" value="{{ course.id }}">
+                        <input type="hidden" name="student_id" value="{{ student.id }}">
+                        <input type="hidden" name="student_username" value="{{ student.username }}">
+                        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                        <button type="submit" class="btn btn-primary">Katsele vastauksia</button>
+                    </form>
                 </li>
                 {% endfor %}
             </ul>

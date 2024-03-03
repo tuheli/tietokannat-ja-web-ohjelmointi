@@ -135,6 +135,20 @@ def get_submissions(user_id, course_id):
     return submissions
 
 
+def is_correct(submission_id):
+    sql = text("""
+                SELECT is_correct, students_choice
+                FROM student_multiple_choice_task_answers A
+                LEFT JOIN multiple_choice_task_options O ON A.option_id = O.id
+                WHERE submission_id = :submission_id
+            """)
+    rows = db.session.execute(sql, {"submission_id": submission_id}).fetchall()
+    for row in rows:
+        if row.is_correct != row.students_choice:
+            return False
+    return True
+
+
 def parse_options(request):
     options = {}
     for key in request.form.keys():

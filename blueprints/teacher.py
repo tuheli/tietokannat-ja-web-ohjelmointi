@@ -17,7 +17,6 @@ def edit_course():
     option_count = request.args.get('option_count', default=4, type=int)
     course = course_service.get(course_id)
     materials = course_service.get_materials(course_id)
-    # students = course_service.get_students(course_id)
     students = statistics_service.get_students_with_submissions(course_id)
     multiple_choice_tasks = multiple_choice_task_service.get(course_id)
     free_form_tasks = free_form_task_service.get(course_id)
@@ -170,3 +169,34 @@ def add_new_free_form_task():
     free_form_task_service.create_task(course_id, question, evaluation_criteria)
     return redirect(
         f'/edit_course?course_id={course_id}&option_count={option_count}')
+
+
+@teacher.route('/view_student_submissions', methods=['POST'])
+def view_student_submissions():
+    if not session.get("username"):
+        flash("Vain kirjautuneet käyttäjät voivat lisätä tehtäviä", "error")
+        return redirect("/")
+
+    if not session.get("is_teacher"):
+        flash("Vain opettajat voivat lisätä tehtäviä", "error")
+        return redirect("/")
+    
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    course_id = request.form["course_id"]
+    student_id = request.form["student_id"]
+    student_username = request.form["student_username"]
+    free_form_submissions = free_form_task_service.get_submissions(student_id, course_id)
+    multiple_choice_submissions = multiple_choice_task_service.get_submissions(student_id, course_id)
+
+    for submission in multiple_choice_submissions:
+        submission["is_correct"] = multiple_choice_task_service.is_correct(submission["submission_id"])
+
+    return render_template(
+        "teacher/student_submissions.html",
+        course_id=course_id,
+        student_id=student_id,
+        student_username=student_username,
+        free_form_submissions=free_form_submissions,
+        multiple_choice_submissions=multiple_choice_submissions,)

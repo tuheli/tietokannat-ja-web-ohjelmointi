@@ -1,0 +1,61 @@
+{% extends "base.html" %} 
+
+{% block content %}
+
+<p>Olet kirjautunut opettajana nimellä {{ session.username }}</p>
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <a href="/logout">Kirjaudu ulos</a>
+    <a href="/edit_course?course_id={{course_id}}">Takaisin kurssisivulle</a>
+    <a href="/">Takaisin kaikkien kurssien näkymään</a>
+</div>
+<hr>
+<div class="container-fluid">
+  <h2>Katselet opiskelijan {{ student_username }} tehtävävastauksia</h2>
+  <br>
+  <div class="row">
+    <div class="col-md-6">
+      <div>
+        <h3>Vapaamuotoiset tehtävät</h3>
+        {% if free_form_submissions|length == 0 %}
+        <p>Opiskelija ei ole tehnyt vapaamuotoisia tehtäviä.</p>
+        {% else %}
+        <ul class="list-group">
+          {% for free_form_submission in free_form_submissions %}
+          <li class="list-group-item">
+            <p>Tehtävän id: {{ free_form_submission.task_id }}</p>
+            <p>Vastausaika: {{ free_form_submission.submission_time }}</p>
+            <p>Kysymys: {{ free_form_submission.question }}</p>
+            <p>Vastaus: {{ free_form_submission.answer }}</p>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+      <h3>Monivalintatehtävät</h3>
+      {% if multiple_choice_submissions|length == 0 %}
+      <p>Opiskelija ei ole tehnyt monivalintatehtäviä.</p>
+      {% else %}
+      <ul class="list-group">
+        {% for multiple_choice_submission in multiple_choice_submissions %}
+        <li class="list-group-item">
+          <p>Tehtävän id: {{ multiple_choice_submission.task_id }}</p>
+          <p>Vastausaika: {{ multiple_choice_submission.submission_time }}</p>
+          <p>Kysymys: {{ multiple_choice_submission.question }}</p>
+          <p>Vastaus:</p>
+          {% for option in multiple_choice_submission.options %}
+          <div>{{ option.text }} - {% if option.students_choice %}oikein{% else %}väärin{% endif %}
+          </div>
+          {% endfor %}
+          <br>
+          {% if multiple_choice_submission.is_correct %}
+          <p>Vastaus on oikein.</p>
+          {% else %}
+          <p>Vastaus on väärin.</p>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+</div>
+
+{% endblock %}
